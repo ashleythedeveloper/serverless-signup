@@ -1,0 +1,35 @@
+org: ashleythedev
+app: signup
+service: signup
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: "${opt:stage, 'dev'}"
+  region: "${opt:region, 'ap-southeast-2'}"
+  memorySize: 256
+  tracing:
+    lambda: true
+    apiGateway: true
+  logs:
+    restApi: true
+functions:
+  signup:
+    description: "Create users and save them to a given database"
+    handler: src/index.signupHandler
+    timeout: 15 # long timeout as infura api can take awhile
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+custom:
+  dotenv:
+    basePath: ./
+  serverless-offline:
+    lambdaPort: 4002
+    httpPort: 4000
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-domain-manager
